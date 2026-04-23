@@ -27,6 +27,12 @@ app.use(session({
 //   cookie: { secure: true }
 }))
 
+//middleware used by ALL routes
+app.use((req, res, next) => {
+   res.locals.fullName = req.session.fullName || "";
+   next(); //next middleware/route
+});
+
 
 //routes
 app.get('/', (req, res) => {
@@ -34,21 +40,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/profile', isUserAuthenticated, (req, res) => {
-
-//    if (req.session.authenticated) { 
-//      res.render('profile.ejs')
-//    } else {
-//      res.redirect("/");
-//    }
-
   res.render('profile.ejs')
-
 });
 
 app.get('/settings', isUserAuthenticated,  (req, res) => {
-
   res.render("settings.ejs")
-   
 });
 
 app.get('/logout', (req, res) => {
@@ -82,6 +78,7 @@ app.post('/loginProcess', async (req, res) => {
      res.render('welcome.ejs', {"fullName":req.session.fullName});
    } else {
      let loginError = "Wrong Credentials! Try again!"
+     //res.locals.loginError = "wrong credentials"
      res.render('login.ejs', {loginError});
    }
 });
@@ -107,6 +104,6 @@ function isUserAuthenticated(req, res, next){
 }
 
 
-app.listen(3000, ()=>{
+app.listen(3001, ()=>{
     console.log("Express server running")
 })
